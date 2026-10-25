@@ -193,3 +193,4 @@ uv run python -m rerank_ja_bench.pipeline --run results/2026-10-25
 - [Cohere APIリファレンス：Rerank](https://docs.cohere.com/reference/rerank)
 - 国税庁ホームページ「タックスアンサー」（[公共データ利用規約（第1.0版）](https://www.nta.go.jp/chuijiko/copy.htm)）。本記事の評価データは、タックスアンサー（源泉所得税）を加工して作成しました
 - [cl-nagoya/ruri-v3-310m](https://huggingface.co/cl-nagoya/ruri-v3-310m)、[cl-nagoya/ruri-v3-reranker-310m](https://huggingface.co/cl-nagoya/ruri-v3-reranker-310m)
+
