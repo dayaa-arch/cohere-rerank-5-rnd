@@ -1,0 +1,24 @@
+warning: The `UV_NATIVE_TLS` environment variable is deprecated and will be removed in a future release. Use `UV_SYSTEM_CERTS` instead.
+plan: 1080 calls (840 billable), 0 already done
+  A                                        calls  120  est $0.0000
+  B       rerank-v4.0-pro                  calls  120  est $0.3000
+  C       rerank-v5.0-pro                  calls  120  est $0.0300
+  D       rerank-v5.0-fast                 calls  120  est $0.0120
+  C2_t01  rerank-v5.0-pro                  calls  120  est $0.0300
+  C2_t04  rerank-v5.0-pro                  calls  120  est $0.0300
+  D2_t01  rerank-v5.0-fast                 calls  120  est $0.0120
+  D2_t04  rerank-v5.0-fast                 calls  120  est $0.0120
+  E       cl-nagoya/ruri-v3-reranker-310m  calls  120  est $0.0000
+  total est $0.4261  (tokens/pass ≈ 200,090)
+  first call B: billed {'search_units': 1}
+  first call C: billed {'input_tokens': 3803}
+  first call D: billed {'input_tokens': 5300}
+  first call C2_t01: billed {'input_tokens': 3803}
+  first call C2_t04: billed {'input_tokens': 3803}
+  first call D2_t01: billed {'input_tokens': 5300}
+  first call D2_t04: billed {'input_tokens': 5300}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights:   0%|          | 0/156 [00:00<?, ?it/s]Loading weights:   2%|▏         | 3/156 [00:00<00:25,  6.03it/s]Loading weights:   3%|▎         | 4/156 [00:00<00:24,  6.09it/s]Loading weights:   4%|▍         | 7/156 [00:01<00:27,  5.38it/s]Loading weights:   9%|▉         | 14/156 [00:01<00:10, 13.28it/s]Loading weights:  11%|█         | 17/156 [00:01<00:10, 13.00it/s]Loading weights:  13%|█▎        | 20/156 [00:02<00:17,  7.81it/s]Loading weights:  15%|█▌        | 24/156 [00:02<00:14,  9.25it/s]Loading weights:  19%|█▊        | 29/156 [00:02<00:11, 11.47it/s]Loading weights:  20%|█▉        | 31/156 [00:03<00:11, 11.29it/s]Loading weights:  21%|██        | 33/156 [00:03<00:13,  9.15it/s]Loading weights:  23%|██▎       | 36/156 [00:04<00:16,  7.37it/s]Loading weights:  24%|██▎       | 37/156 [00:04<00:16,  7.23it/s]Loading weights:  24%|██▍       | 38/156 [00:04<00:17,  6.94it/s]Loading weights:  25%|██▌       | 39/156 [00:04<00:22,  5.18it/s]Loading weights:  26%|██▌       | 40/156 [00:05<00:38,  2.99it/s]Loading weights:  26%|██▋       | 41/156 [00:05<00:32,  3.51it/s]Loading weights:  29%|██▉       | 46/156 [00:06<00:16,  6.53it/s]Loading weights:  32%|███▏      | 50/156 [00:06<00:11,  8.98it/s]Loading weights:  33%|███▎      | 52/156 [00:06<00:10,  9.77it/s]Loading weights:  37%|███▋      | 58/156 [00:06<00:07, 13.79it/s]Loading weights:  38%|███▊      | 60/156 [00:07<00:08, 11.81it/s]Loading weights:  40%|███▉      | 62/156 [00:07<00:08, 11.52it/s]Loading weights:  41%|████      | 64/156 [00:07<00:08, 11.15it/s]Loading weights:  42%|████▏     | 66/156 [00:07<00:09,  9.45it/s]Loading weights:  44%|████▎     | 68/156 [00:08<00:10,  8.64it/s]Loading weights:  46%|████▌     | 71/156 [00:08<00:08,  9.70it/s]Loading weights:  47%|████▋     | 73/156 [00:08<00:08, 10.30it/s]Loading weights:  49%|████▊     | 76/156 [00:08<00:06, 12.62it/s]Loading weights:  51%|█████▏    | 80/156 [00:08<00:05, 13.89it/s]Loading weights:  53%|█████▎    | 82/156 [00:09<00:10,  7.38it/s]Loading weights:  55%|█████▌    | 86/156 [00:09<00:08,  8.60it/s]Loading weights:  56%|█████▋    | 88/156 [00:10<00:07,  9.05it/s]Loading weights:  58%|█████▊    | 90/156 [00:10<00:10,  6.48it/s]Loading weights:  60%|██████    | 94/156 [00:11<00:09,  6.51it/s]Loading weights:  63%|██████▎   | 99/156 [00:11<00:06,  9.33it/s]Loading weights:  65%|██████▍   | 101/156 [00:11<00:05, 10.17it/s]Loading weights:  66%|██████▌   | 103/156 [00:12<00:06,  8.36it/s]Loading weights:  69%|██████▊   | 107/156 [00:12<00:05,  9.26it/s]Loading weights:  71%|███████   | 111/156 [00:12<00:05,  8.90it/s]Loading weights:  75%|███████▌  | 117/156 [00:13<00:03, 12.42it/s]Loading weights:  76%|███████▋  | 119/156 [00:13<00:02, 13.08it/s]Loading weights:  78%|███████▊  | 121/156 [00:13<00:02, 13.82it/s]Loading weights:  79%|███████▉  | 123/156 [00:13<00:02, 12.86it/s]Loading weights:  81%|████████  | 126/156 [00:13<00:01, 15.12it/s]Loading weights:  82%|████████▏ | 128/156 [00:14<00:03,  7.34it/s]Loading weights: 100%|██████████| 156/156 [00:14<00:00, 10.85it/s]
+  20/1080 done  billed so far {'search_units': 2, 'input_tokens': 66330}
+  40/1080 done  billed so far {'search_units': 4, 'input_tokens': 125203}
+  60/1080 done  billed so far {'search_units': 7, 'input_tokens': 169809}
