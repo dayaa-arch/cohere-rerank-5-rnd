@@ -6,6 +6,7 @@
 - summary.md：比較表
 - fig_accuracy.png：条件ごとの MRR と nDCG@10（95％信頼区間つき）
 - fig_tradeoff.png：nDCG@10 と遅延、nDCG@10 と1問あたりの費用
+- fig_x_card.png：X に載せる比較表1枚（実測値だけ）
 - cases.md：条件によって最初の正解の順位が大きく変わった問題の一覧（メモの材料）
 """
 
@@ -369,6 +370,75 @@ def plot_tradeoff(summary: list[dict], path: Path) -> None:
     plt.close(fig)
 
 
+def plot_x_card(summary: list[dict], path: Path) -> None:
+    """X に載せる比較表1枚（実測値だけ。公式発表の値は載せない）。"""
+    rows = [s for s in summary if s["condition"] in ("A", "B", "C", "D", "E")]
+    names = {
+        "A": "リランカーなし",
+        "B": "Rerank 4 Pro",
+        "C": "Rerank 5 Pro",
+        "D": "Rerank 5 Fast",
+        "E": "ruri-v3-reranker（CPU）",
+    }
+    header = ["", "1位が正解", "MRR", "nDCG@10", "遅延 p50", "1問あたり費用"]
+    x = [0.0, 0.44, 0.56, 0.71, 0.85, 1.0]  # 1列目は左端、残りは右端の位置
+    cells = []
+    for s in rows:
+        cost = s.get("cost_per_question_usd")
+        lat = s.get("latency_p50_ms")
+        cells.append(
+            [
+                names[s["condition"]],
+                f"{s['hit@1'] * 100:.0f}%",
+                f"{s['mrr']:.3f}",
+                f"{s['ndcg@10']:.3f}",
+                "—" if lat is None else f"{lat:,.0f} ms",
+                "—" if cost is None else f"${cost:.5f}",
+            ]
+        )
+    fig, ax = plt.subplots(figsize=(8.4, 3.6), facecolor=SURFACE)
+    ax.set_position([0.03, 0.25, 0.94, 0.62])
+    ax.axis("off")
+
+    def put(i: int, y: float, text: str, **kw) -> None:
+        ax.text(
+            x[i],
+            y,
+            text,
+            ha="left" if i == 0 else "right",
+            va="center",
+            transform=ax.transAxes,
+            **kw,
+        )
+
+    y = 0.95
+    for i, h in enumerate(header):
+        put(i, y, h, fontsize=10, color=TEXT_SECONDARY)
+    ax.plot([0, 1], [y - 0.1, y - 0.1], color=TEXT_SECONDARY, linewidth=0.8, transform=ax.transAxes)
+    for r, row in enumerate(cells):
+        for i, v in enumerate(row):
+            put(i, y - 0.25 - r * 0.18, v, fontsize=11, color=TEXT)
+    n = int(summary[0]["n_accuracy"])
+    fig.text(0.03, 0.93, "日本語RAGでのリランカー比較（実測、2026-10-25）", fontsize=13, color=TEXT)
+    fig.text(
+        0.03,
+        0.09,
+        f"国税庁タックスアンサー（源泉所得税）345チャンク、質問40問（精度は{n}問）。候補20件は全条件で共通。",
+        fontsize=7.5,
+        color=TEXT_SECONDARY,
+    )
+    fig.text(
+        0.03,
+        0.04,
+        "Rerank 4 Pro と 5 Pro・5 Fast の精度の差は、この問題数では誤差の範囲（95％信頼区間が0をまたぐ）。"
+        "費用は課金量の実測×単価（4 Pro の単価は第三者サイトの値）。",
+        fontsize=7.5,
+        color=TEXT_SECONDARY,
+    )
+    fig.savefig(path, dpi=200, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def render_cases(per_q: list[dict], qa: dict[str, dict], top: int = 10) -> str:
     """最初の正解の順位が条件によって大きく変わった問題（主要5条件の比較）。"""
     focus = ["A", "B", "C", "D", "E"]
@@ -413,6 +483,7 @@ def main() -> None:
     (run_dir / "summary.md").write_text(render_markdown(summary, meta, run_meta, paired))
     plot_accuracy(summary, run_dir / "fig_accuracy.png")
     plot_tradeoff(summary, run_dir / "fig_tradeoff.png")
+    plot_x_card(summary, run_dir / "fig_x_card.png")
     (run_dir / "cases.md").write_text(render_cases(per_q, qa))
     print(f"wrote {run_dir}/summary.md, fig_accuracy.png, fig_tradeoff.png, cases.md")
 

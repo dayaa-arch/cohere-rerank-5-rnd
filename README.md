@@ -2,7 +2,7 @@
 
 日本語RAGで Cohere Rerank 5 に乗り換える価値があるかを、40問の小さな評価で確かめる検証リポジトリ。仕様は [docs/spec.md](docs/spec.md) にある。
 
-現在はフェーズ5（集計）まで。結果は [docs/phase5_report.md](docs/phase5_report.md) と、比較表 [results/2026-10-25/summary.md](results/2026-10-25/summary.md) を参照。
+フェーズ6（発信用の素材の下書き）まで完了。結果は [docs/phase5_report.md](docs/phase5_report.md) と、比較表 [results/2026-10-25/summary.md](results/2026-10-25/summary.md) を参照。Xの文案とZenn記事の下書きは [docs/phase6_drafts.md](docs/phase6_drafts.md)、[docs/zenn_draft.md](docs/zenn_draft.md)（未投稿）。
 
 ## 結果の要約（2026-10-25 実行、実測）
 
