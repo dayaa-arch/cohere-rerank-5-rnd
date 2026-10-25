@@ -72,11 +72,11 @@ Cohere は2026年10月21日に Rerank 5 を発表しました。公式ブログ�
 
 | 条件 | 1位が正解 | MRR | nDCG@10 |
 | --- | --- | --- | --- |
-| リランカーなし | 65％ | 0.801 | 0.860 |
-| Rerank 4 Pro | 87％ | 0.930 | 0.939 |
-| Rerank 5 Pro | 94％ | 0.962 | 0.945 |
+| リランカーなし | 65％ | 0.801 | 0.863 |
+| Rerank 4 Pro | 87％ | 0.930 | 0.940 |
+| Rerank 5 Pro | 94％ | 0.962 | 0.946 |
 | Rerank 5 Fast | 90％ | 0.946 | 0.932 |
-| ruri-v3-reranker（CPU） | 90％ | 0.941 | 0.928 |
+| ruri-v3-reranker（CPU） | 90％ | 0.941 | 0.929 |
 
 ![精度](/images/rerank5/fig_accuracy.png)
 <!-- results/2026-10-25/fig_accuracy.png -->
