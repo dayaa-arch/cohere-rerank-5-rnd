@@ -2,7 +2,7 @@
 
 日本語RAGで Cohere Rerank 5 に乗り換える価値があるかを、40問の小さな評価で確かめる検証リポジトリ。仕様は [docs/spec.md](docs/spec.md) にある。
 
-現在はフェーズ3（1段目の検索）まで。報告は [docs/phase1_report.md](docs/phase1_report.md)、[docs/phase2_report.md](docs/phase2_report.md)、[docs/phase3_report.md](docs/phase3_report.md) を参照。コーパスの出典とライセンスは [data/corpus/README.md](data/corpus/README.md) にある。再現手順、実行日、モデルID、コーパスの出典とライセンスは、本実行のあとにここへ書く。
+現在はフェーズ4（本実行）の承認待ち。報告は [docs/phase1_report.md](docs/phase1_report.md)、[docs/phase2_report.md](docs/phase2_report.md)、[docs/phase3_report.md](docs/phase3_report.md)、[docs/phase4_report.md](docs/phase4_report.md) を参照。コーパスの出典とライセンスは [data/corpus/README.md](data/corpus/README.md) にある。再現手順、実行日、モデルID、コーパスの出典とライセンスは、本実行のあとにここへ書く。
 
 ## セットアップ
 
@@ -21,6 +21,8 @@ uv run python -m rerank_ja_bench.corpus extract   # 本文を抽出（data/corpu
 uv run python -m rerank_ja_bench.chunk            # チャンク分割（data/chunks.jsonl）
 uv run python -m rerank_ja_bench.qa check         # 評価データの検証
 uv run python -m rerank_ja_bench.retrieve         # 1段目の検索（data/candidates.jsonl）
+uv run python -m rerank_ja_bench.run --dry-run    # 本実行の呼び出し回数と費用の見積もり（APIは呼ばない）
+uv run python -m rerank_ja_bench.run              # 本実行（課金あり。results/<日付>/raw/ に生の応答を保存）
 uv run pytest
 ```
 
