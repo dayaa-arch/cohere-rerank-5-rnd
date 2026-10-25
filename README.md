@@ -2,7 +2,7 @@
 
 日本語RAGで Cohere Rerank 5 に乗り換える価値があるかを、40問の小さな評価で確かめる検証リポジトリ。仕様は [docs/spec.md](docs/spec.md) にある。
 
-現在はフェーズ1（準備）まで。結果は [docs/phase1_report.md](docs/phase1_report.md) を参照。再現手順、実行日、モデルID、コーパスの出典とライセンスは、本実行のあとにここへ書く。
+現在はフェーズ2（評価データ）まで。報告は [docs/phase1_report.md](docs/phase1_report.md)、[docs/phase2_report.md](docs/phase2_report.md) を参照。コーパスの出典とライセンスは [data/corpus/README.md](data/corpus/README.md) にある。再現手順、実行日、モデルID、コーパスの出典とライセンスは、本実行のあとにここへ書く。
 
 ## セットアップ
 
@@ -12,6 +12,16 @@ cp .env.example .env   # COHERE_API_KEY を書く（.env はコミットしな�
 ```
 
 APIキーは環境変数 `COHERE_API_KEY` から読む。
+
+## 評価データを作り直す
+
+```bash
+uv run python -m rerank_ja_bench.corpus fetch     # 国税庁のページを取得（data/corpus/raw/）
+uv run python -m rerank_ja_bench.corpus extract   # 本文を抽出（data/corpus/docs.jsonl）
+uv run python -m rerank_ja_bench.chunk            # チャンク分割（data/chunks.jsonl）
+uv run python -m rerank_ja_bench.qa check         # 評価データの検証
+uv run pytest
+```
 
 ## ディレクトリ
 
