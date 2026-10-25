@@ -2,7 +2,7 @@
 title: "Cohere Rerank 5 に乗り換える価値はあるか：日本語の業務文書40問で精度・Context Focus・較正スコアを実測した"
 emoji: "🔎"
 type: "tech"
-topics: ["rag", "cohere", "rerank", "検索", "日本語"]
+topics: ["rag", "cohere", "rerank", "llm", "python"]
 published: false
 ---
 
@@ -185,7 +185,7 @@ ruri-v3-reranker もスコアが0と1に寄っていて、このデータでは0
 
 ## 再現方法
 
-コード、評価データ、生の応答はすべて公開しています【要確認：リポジトリのURL】。保存済みの応答から比較表とグラフを作り直すだけなら、API キーは要りません。
+コード、評価データ、生の応答はすべて [GitHub](https://github.com/dayaa-arch/cohere-rerank-5-rnd) で公開しています。保存済みの応答から比較表とグラフを作り直すだけなら、API キーは要りません。
 
 ```bash
 uv sync
