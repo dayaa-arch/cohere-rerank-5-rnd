@@ -1,0 +1,6 @@
+plan: 80 calls (0 done); pages per question median 10.0, max 17; tokens/pass ≈ 458,334; est $0.0321
+  1/80 billed {'input_tokens': 7954}
+  20/80 billed {'input_tokens': 15337}
+  40/80 billed {'input_tokens': 18118}
+  60/80 billed {'input_tokens': 11738}
+  80/80 billed {'input_tokens': 20290}

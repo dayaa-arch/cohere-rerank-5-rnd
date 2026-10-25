@@ -91,3 +91,9 @@ def test_cohere_reranker_sends_spans_and_retries_on_429(monkeypatch):
 def test_cohere_reranker_omits_spans_when_disabled():
     r = CohereReranker("C", "rerank-v5.0-pro", client=httpx.Client())
     assert "relevant_spans" not in r.request_body("q", ["d"])
+
+
+def test_cohere_reranker_sends_max_tokens_per_doc_only_when_set():
+    r = CohereReranker("P", "rerank-v5.0-pro", max_tokens_per_doc=8192, client=httpx.Client())
+    assert r.request_body("q", ["d"])["max_tokens_per_doc"] == 8192
+    assert r.params["max_tokens_per_doc"] == 8192

@@ -26,13 +26,17 @@ class CohereReranker(Reranker):
         name: str,
         model: str,
         relevant_spans: dict[str, Any] | None = None,
+        max_tokens_per_doc: int | None = None,
         client: httpx.Client | None = None,
         max_retries: int = 4,
     ) -> None:
         self.name = name
         self.model = model
         self.relevant_spans = relevant_spans
+        self.max_tokens_per_doc = max_tokens_per_doc
         self.params = {"model": model, "relevant_spans": relevant_spans}
+        if max_tokens_per_doc is not None:
+            self.params["max_tokens_per_doc"] = max_tokens_per_doc
         self.max_retries = max_retries
         self._client = client
 
@@ -52,6 +56,8 @@ class CohereReranker(Reranker):
         body: dict[str, Any] = {"model": self.model, "query": query, "documents": documents}
         if self.relevant_spans is not None:
             body["relevant_spans"] = self.relevant_spans
+        if self.max_tokens_per_doc is not None:
+            body["max_tokens_per_doc"] = self.max_tokens_per_doc
         return body
 
     def rerank(self, query: str, documents: list[str]) -> RerankResult:

@@ -15,7 +15,7 @@
 | `cl-nagoya/ruri-v3-reranker-310m`（CPU） | 0.941 | 0.928 | 7,789 ms | — |
 
 - どのリランカーも、リランカーなしより明らかに精度が上がる。モデルどうしの差は、31問では誤差の範囲
-- Context Focus は、短いチャンク（平均約280字）ではトークンを1.5〜10％しか減らさなかった。正解箇所は100％残った
+- Context Focus は、短いチャンク（平均約280字）ではトークンを1.5〜10％しか減らさなかった。ページ全文（中央値980字）を渡す追加実験では62〜66％減り、根拠の文字列は98〜100％残った（[results/2026-10-25/page_cf/summary.md](results/2026-10-25/page_cf/summary.md)）
 - 公式しきい値（Pro 0.50、Fast 0.45）で、答えのない8問はすべての候補を弾けた
 - `rerank-v4.0-pro` の単価は第三者サイトの値（1,000検索単位あたり2.50ドル）で、公式には確かめていない
 
@@ -59,6 +59,8 @@ uv run python -m rerank_ja_bench.pipeline --run results/<日付> --retrieve --ca
 ```
 
 `--call-api` の前に `uv run python -m rerank_ja_bench.run --dry-run` で呼び出し回数と費用の見積もりを確かめられる。今回の実費は0.40ドルだった。
+
+ページ単位の追加実験（実費0.026ドル）は `uv run python -m rerank_ja_bench.page_experiment run`（課金あり、`--dry-run` で見積もり）と `... page_experiment evaluate`（API は呼ばない）で再現できる。
 
 ## ディレクトリ
 
