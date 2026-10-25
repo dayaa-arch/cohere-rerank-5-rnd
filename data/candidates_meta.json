@@ -1,0 +1,48 @@
+{
+  "model": "cl-nagoya/ruri-v3-310m",
+  "model_revision": "18b60fb8c2b9df296fb4212bb7d23ef94e579cd3",
+  "query_prefix": "検索クエリ: ",
+  "document_prefix": "検索文書: ",
+  "top_k": 20,
+  "similarity": "cosine (normalized embeddings, dot product)",
+  "n_chunks": 345,
+  "n_questions": 40,
+  "started_at": "2026-10-25T08:39:38+00:00",
+  "versions": {
+    "python": "3.13.17",
+    "sentence_transformers": "6.2.0",
+    "torch": "2.14.1+cpu"
+  },
+  "device": "cpu",
+  "cpu_threads": 4,
+  "seconds": {
+    "model_load": 1.47,
+    "encode_chunks": 90.48,
+    "encode_queries": 1.63
+  },
+  "coverage": {
+    "n": 32,
+    "hit@20": 0.96875,
+    "recall@20": 0.96875,
+    "by_type": {
+      "fact": {
+        "n": 12,
+        "hit@20": 1.0,
+        "recall@20": 1.0
+      },
+      "paraphrase": {
+        "n": 12,
+        "hit@20": 0.9166666666666666,
+        "recall@20": 0.9166666666666666
+      },
+      "multi": {
+        "n": 8,
+        "hit@20": 1.0,
+        "recall@20": 1.0
+      }
+    },
+    "missed": [
+      "q14"
+    ]
+  }
+}

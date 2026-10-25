@@ -1,0 +1,49 @@
+[project]
+name = "rerank-ja-bench"
+version = "0.1.0"
+description = "日本語RAGでのリランカー比較（Cohere Rerank 5 / 4、ruri-v3 ほか）"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "cohere>=7.3,<8",
+    "python-dotenv>=1.0",
+    "numpy>=2.0",
+    "matplotlib>=3.9",
+    # 1段目の検索（ruri-v3 埋め込み）と条件E（ruri-v3 リランカー）
+    "sentence-transformers>=3.4",
+    "transformers>=4.48",
+    "torch>=2.5",
+    "httpx>=0.28",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.3",
+    "matplotlib-fontja>=1.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.8",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rerank_ja_bench"]
+
+# Linux では CPU 版の torch を使う（CUDA 版は数GBあり、この検証では不要）
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

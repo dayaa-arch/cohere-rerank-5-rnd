@@ -1,1 +1,23 @@
+# 秘密情報（APIキーは環境変数 COHERE_API_KEY から読む）
 .env
+.env.*
+!.env.example
+
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# モデルや埋め込みのローカルキャッシュ
+.cache/
+data/cache/
+
+# OS / エディタ
+.DS_Store
+.idea/
+.vscode/
