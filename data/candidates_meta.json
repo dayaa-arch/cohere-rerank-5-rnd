@@ -7,7 +7,7 @@
   "similarity": "cosine (normalized embeddings, dot product)",
   "n_chunks": 345,
   "n_questions": 40,
-  "started_at": "2026-10-25T08:33:33+00:00",
+  "started_at": "2026-10-25T08:39:38+00:00",
   "versions": {
     "python": "3.13.17",
     "sentence_transformers": "6.2.0",
@@ -16,9 +16,9 @@
   "device": "cpu",
   "cpu_threads": 4,
   "seconds": {
-    "model_load": 15.77,
-    "encode_chunks": 97.3,
-    "encode_queries": 1.55
+    "model_load": 1.47,
+    "encode_chunks": 90.48,
+    "encode_queries": 1.63
   },
   "coverage": {
     "n": 32,
