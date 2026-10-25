@@ -6,7 +6,7 @@
 - summary.md：比較表
 - fig_accuracy.png：条件ごとの MRR と nDCG@10（95％信頼区間つき）
 - fig_tradeoff.png：nDCG@10 と遅延、nDCG@10 と1問あたりの費用
-- fig_x_card.png：X に載せる比較表1枚（実測値だけ）
+- fig_x_card.png、fig_x_context_focus.png、fig_x_threshold.png：X に載せる表の画像（実測値だけ）
 - cases.md：条件によって最初の正解の順位が大きく変わった問題の一覧（メモの材料）
 """
 
@@ -439,6 +439,133 @@ def plot_x_card(summary: list[dict], path: Path) -> None:
     plt.close(fig)
 
 
+def plot_table_card(
+    title: str, header: list[str], rows: list[list[str]], notes: list[str], path: Path
+) -> None:
+    """X に載せる表の画像。1列目は左寄せ、ほかは右寄せ。"""
+    n_cols = len(header)
+    first_w = 0.34
+    x = [0.0] + [first_w + (1 - first_w) * (i + 1) / (n_cols - 1) for i in range(n_cols - 1)]
+    height = 1.7 + 0.42 * len(rows) + 0.25 * len(notes)
+    fig, ax = plt.subplots(figsize=(8.4, height), facecolor=SURFACE)
+    top, bottom = 1 - 0.75 / height, (0.35 + 0.25 * len(notes)) / height
+    ax.set_position([0.03, bottom, 0.94, top - bottom])
+    ax.axis("off")
+    step = 1 / (len(rows) + 1.5)
+
+    def put(i: int, y: float, text: str, **kw) -> None:
+        ha = "left" if i == 0 else "right"
+        ax.text(x[i], y, text, ha=ha, va="center", transform=ax.transAxes, **kw)
+
+    # 見出しは "\n" で2行にできる
+    for i, h in enumerate(header):
+        put(i, 1 - step * 0.55, h, fontsize=10, color=TEXT_SECONDARY, linespacing=1.3)
+    line_y = 1 - step * 1.25
+    ax.plot([0, 1], [line_y, line_y], color=TEXT_SECONDARY, linewidth=0.8, transform=ax.transAxes)
+    for r, row in enumerate(rows):
+        for i, v in enumerate(row):
+            put(i, line_y - step * (r + 0.75), v, fontsize=11, color=TEXT)
+    fig.text(0.03, 1 - 0.45 / height, title, fontsize=13, color=TEXT)
+    for k, note in enumerate(notes):
+        fig.text(
+            0.03,
+            (0.15 + 0.25 * (len(notes) - 1 - k)) / height,
+            note,
+            fontsize=7.5,
+            color=TEXT_SECONDARY,
+        )
+    fig.savefig(path, dpi=200, facecolor=SURFACE)
+    plt.close(fig)
+
+
+def plot_x_context_focus(page_summary: list[dict], path: Path) -> None:
+    """X に載せる Context Focus の表（チャンク単位とページ単位、threshold 0.4）。"""
+    names = {"rerank-v5.0-pro": "5 Pro", "rerank-v5.0-fast": "5 Fast"}
+    rows = []
+    for unit, full, comp, kept in [
+        (
+            "チャンク",
+            "chunk_top5_tokens_full",
+            "chunk_top5_tokens_compressed",
+            "evidence_reached_llm_chunk",
+        ),
+        (
+            "ページ全文",
+            "page_top5_tokens_full",
+            "page_top5_tokens_compressed",
+            "evidence_reached_llm_page",
+        ),
+    ]:
+        for s in page_summary:
+            rows.append(
+                [
+                    f"{unit}・{names[s['model']]}",
+                    f"{s[full]:,.0f}",
+                    f"{s[comp]:,.0f}",
+                    f"{(1 - s[comp] / s[full]) * 100:.0f}%",
+                    f"{s[kept] * 100:.0f}%",
+                ]
+            )
+    plot_table_card(
+        "Context Focus（threshold 0.4）で、上位5件の本文をどれだけ削れたか",
+        [
+            "渡す単位・モデル",
+            "削る前\n（トークン）",
+            "削った後\n（トークン）",
+            "削減率",
+            "答えの根拠\nが残った",
+        ],
+        rows,
+        [
+            "トークン数は答えのある32問の平均（ruri-v3 のトークナイザーで計数）。チャンクは400字以内（中央値280字）、ページは中央値980字。",
+            "答えの根拠が残った：答えを述べた文字列52件のうち、削った後の上位5件に丸ごと残った割合。",
+        ],
+        path,
+    )
+
+
+def plot_x_threshold(summary: list[dict], path: Path) -> None:
+    """X に載せる較正スコアの表（1位のスコアで答えの有無を分けられるか）。"""
+    by = {s["condition"]: s for s in summary}
+    official = {"C": "0.50", "D": "0.45"}
+    names = {
+        "B": "Rerank 4 Pro",
+        "C": "Rerank 5 Pro",
+        "D": "Rerank 5 Fast",
+        "E": "ruri-v3-reranker",
+    }
+    rows = []
+    for c in ["B", "C", "D", "E"]:
+        s = by[c]
+        all_below = s.get("no_answer_all_below")
+        rows.append(
+            [
+                names[c],
+                official.get(c, "なし"),
+                f"{s['no_answer_top1_max']:.3f}",
+                f"{s['answerable_top1_min']:.3f}",
+                "—" if all_below is None else f"{all_below * 8:.0f}/8問",
+            ]
+        )
+    n = int(summary[0]["n_accuracy"])
+    plot_table_card(
+        "較正スコア：1位のスコアで「答えがない質問」を見分けられるか",
+        [
+            "モデル",
+            "公式\nしきい値",
+            "答えなし8問\nの1位の最大",
+            f"答えあり{n}問\nの1位の最小",
+            "答えなし8問を\nしきい値で弾けた",
+        ],
+        rows,
+        [
+            "答えなし：答えがコーパスにない質問。最大・最小は、各質問の1位のスコア。",
+            "Rerank 4 Pro と ruri には公式しきい値がない。5 Pro は答えありの1問（0.455）がしきい値0.50を下回った。",
+        ],
+        path,
+    )
+
+
 def render_cases(per_q: list[dict], qa: dict[str, dict], top: int = 10) -> str:
     """最初の正解の順位が条件によって大きく変わった問題（主要5条件の比較）。"""
     focus = ["A", "B", "C", "D", "E"]
@@ -484,8 +611,12 @@ def main() -> None:
     plot_accuracy(summary, run_dir / "fig_accuracy.png")
     plot_tradeoff(summary, run_dir / "fig_tradeoff.png")
     plot_x_card(summary, run_dir / "fig_x_card.png")
+    plot_x_threshold(summary, run_dir / "fig_x_threshold.png")
+    page_summary_path = run_dir / "page_cf" / "summary.csv"
+    if page_summary_path.exists():
+        plot_x_context_focus(read_csv(page_summary_path), run_dir / "fig_x_context_focus.png")
     (run_dir / "cases.md").write_text(render_cases(per_q, qa))
-    print(f"wrote {run_dir}/summary.md, fig_accuracy.png, fig_tradeoff.png, cases.md")
+    print(f"wrote {run_dir}/summary.md, fig_*.png, cases.md")
 
 
 if __name__ == "__main__":

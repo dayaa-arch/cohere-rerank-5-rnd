@@ -3,7 +3,7 @@ title: "Cohere Rerank 5 に乗り換える価値はあるか：日本語の業�
 emoji: "🔎"
 type: "tech"
 topics: ["rag", "cohere", "rerank", "llm", "python"]
-published: false
+published: true
 ---
 
 日本語の業務文書（国税庁タックスアンサーの源泉所得税）で作った40問で、Cohere Rerank 5 と Rerank 4 Pro、日本語OSSの ruri-v3-reranker を比べました。結論は次の3つです。
