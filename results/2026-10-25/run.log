@@ -22,3 +22,56 @@ Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF
   20/1080 done  billed so far {'search_units': 2, 'input_tokens': 66330}
   40/1080 done  billed so far {'search_units': 4, 'input_tokens': 125203}
   60/1080 done  billed so far {'search_units': 7, 'input_tokens': 169809}
+  80/1080 done  billed so far {'search_units': 9, 'input_tokens': 230420}
+  100/1080 done  billed so far {'search_units': 11, 'input_tokens': 295797}
+  120/1080 done  billed so far {'search_units': 13, 'input_tokens': 356994}
+  140/1080 done  billed so far {'search_units': 16, 'input_tokens': 403836}
+  160/1080 done  billed so far {'search_units': 18, 'input_tokens': 457076}
+  180/1080 done  billed so far {'search_units': 20, 'input_tokens': 516285}
+  200/1080 done  billed so far {'search_units': 22, 'input_tokens': 579867}
+  220/1080 done  billed so far {'search_units': 24, 'input_tokens': 637419}
+  240/1080 done  billed so far {'search_units': 27, 'input_tokens': 706783}
+  260/1080 done  billed so far {'search_units': 29, 'input_tokens': 783243}
+  280/1080 done  billed so far {'search_units': 31, 'input_tokens': 847429}
+  300/1080 done  billed so far {'search_units': 33, 'input_tokens': 903744}
+  320/1080 done  billed so far {'search_units': 36, 'input_tokens': 952054}
+  340/1080 done  billed so far {'search_units': 38, 'input_tokens': 1022082}
+  360/1080 done  billed so far {'search_units': 40, 'input_tokens': 1074939}
+  380/1080 done  billed so far {'search_units': 42, 'input_tokens': 1141269}
+  400/1080 done  billed so far {'search_units': 44, 'input_tokens': 1200142}
+  420/1080 done  billed so far {'search_units': 47, 'input_tokens': 1244748}
+  440/1080 done  billed so far {'search_units': 49, 'input_tokens': 1305359}
+  460/1080 done  billed so far {'search_units': 51, 'input_tokens': 1370736}
+  480/1080 done  billed so far {'search_units': 53, 'input_tokens': 1431933}
+  500/1080 done  billed so far {'search_units': 56, 'input_tokens': 1478775}
+  520/1080 done  billed so far {'search_units': 58, 'input_tokens': 1532015}
+  540/1080 done  billed so far {'search_units': 60, 'input_tokens': 1591224}
+  560/1080 done  billed so far {'search_units': 62, 'input_tokens': 1654806}
+  580/1080 done  billed so far {'search_units': 64, 'input_tokens': 1712358}
+  600/1080 done  billed so far {'search_units': 67, 'input_tokens': 1781722}
+  620/1080 done  billed so far {'search_units': 69, 'input_tokens': 1858182}
+  640/1080 done  billed so far {'search_units': 71, 'input_tokens': 1922368}
+  660/1080 done  billed so far {'search_units': 73, 'input_tokens': 1978683}
+  680/1080 done  billed so far {'search_units': 76, 'input_tokens': 2026993}
+  700/1080 done  billed so far {'search_units': 78, 'input_tokens': 2097021}
+  720/1080 done  billed so far {'search_units': 80, 'input_tokens': 2149878}
+  740/1080 done  billed so far {'search_units': 82, 'input_tokens': 2216208}
+  760/1080 done  billed so far {'search_units': 84, 'input_tokens': 2275081}
+  780/1080 done  billed so far {'search_units': 87, 'input_tokens': 2319687}
+  800/1080 done  billed so far {'search_units': 89, 'input_tokens': 2380298}
+  820/1080 done  billed so far {'search_units': 91, 'input_tokens': 2445675}
+  840/1080 done  billed so far {'search_units': 93, 'input_tokens': 2506872}
+  860/1080 done  billed so far {'search_units': 96, 'input_tokens': 2553714}
+  880/1080 done  billed so far {'search_units': 98, 'input_tokens': 2606954}
+  900/1080 done  billed so far {'search_units': 100, 'input_tokens': 2666163}
+  920/1080 done  billed so far {'search_units': 102, 'input_tokens': 2729745}
+  940/1080 done  billed so far {'search_units': 104, 'input_tokens': 2787297}
+  960/1080 done  billed so far {'search_units': 107, 'input_tokens': 2856661}
+  980/1080 done  billed so far {'search_units': 109, 'input_tokens': 2933121}
+  1000/1080 done  billed so far {'search_units': 111, 'input_tokens': 2997307}
+  1020/1080 done  billed so far {'search_units': 113, 'input_tokens': 3053622}
+  1040/1080 done  billed so far {'search_units': 116, 'input_tokens': 3101932}
+  1060/1080 done  billed so far {'search_units': 118, 'input_tokens': 3171960}
+  1080/1080 done  billed so far {'search_units': 120, 'input_tokens': 3224817}
+wrote results/2026-10-25/raw
+exit 0

@@ -1,0 +1,18 @@
+{
+  "accuracy_excluded_not_in_top20": [
+    "q14"
+  ],
+  "context_top_k": 5,
+  "token_counter": "cl-nagoya/ruri-v3-310m@18b60fb8c2b9df296fb4212bb7d23ef94e579cd3 の tokenizer（特殊トークンなし）",
+  "docs_without_spans": "0トークン（LLMに渡さない）として数える",
+  "official_thresholds": {
+    "rerank-v5.0-pro": 0.5,
+    "rerank-v5.0-fast": 0.45
+  },
+  "cost_source": "応答の billed_units（実測）× 単価（v5：公式ブログ、v4：第三者サイト）",
+  "bootstrap": {
+    "samples": 2000,
+    "seed": 0,
+    "ci": 0.95
+  }
+}
