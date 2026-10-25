@@ -7,6 +7,8 @@ qa.jsonl の各行：
 - id, type, question, relevant_chunk_ids（仕様書の必須項目）
 - partial_chunk_ids：答えの一部だけを含むチャンク。nDCG で関連度1として使う
 - answer：確認用の想定回答（答えがない問題は null）
+- evidence：答えを述べている箇所。正解チャンクの本文からそのまま抜き出した文字列で、
+  Context Focus で削ったあとも正解の文が残るか（保持率）の判定に使う
 """
 
 from __future__ import annotations
@@ -34,8 +36,11 @@ def load_jsonl(path: Path) -> list[dict]:
     return [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
 
 
-def validate(qa: list[dict], chunk_ids: set[str]) -> list[str]:
-    """問題点を文字列のリストで返す。空なら問題なし。"""
+def validate(qa: list[dict], chunk_ids: set[str] | dict[str, str]) -> list[str]:
+    """問題点を文字列のリストで返す。空なら問題なし。
+
+    chunk_ids にチャンクIDから本文への dict を渡すと、evidence が本文にあるかも確かめる。
+    """
     errors = []
     ids = [q["id"] for q in qa]
     for dup, n in Counter(ids).items():
@@ -50,6 +55,11 @@ def validate(qa: list[dict], chunk_ids: set[str]) -> list[str]:
         for cid in rel + par:
             if cid not in chunk_ids:
                 errors.append(f"{qid}: chunk_id {cid} が chunks.jsonl にない")
+        for ev in q.get("evidence", []):
+            if ev["chunk_id"] not in rel:
+                errors.append(f"{qid}: evidence のチャンク {ev['chunk_id']} が正解に入っていない")
+            elif isinstance(chunk_ids, dict) and chunk_ids[ev["chunk_id"]].count(ev["text"]) != 1:
+                errors.append(f"{qid}: evidence が {ev['chunk_id']} の本文にちょうど1回現れない")
         if set(rel) & set(par):
             errors.append(f"{qid}: relevant と partial の両方に入っているチャンクがある")
         if q["type"] == "no_answer" and (rel or par):
@@ -88,6 +98,8 @@ def render_review(qa: list[dict], chunks: dict[str, dict]) -> str:
             lines += [f"### {q['id']}　{q['question']}", ""]
             if q.get("answer"):
                 lines += [f"想定回答：{q['answer']}", ""]
+            for ev in q.get("evidence", []):
+                lines += [f"根拠（`{ev['chunk_id']}`）：「{ev['text']}」", ""]
             marks = [("◎", cid) for cid in q["relevant_chunk_ids"]]
             marks += [("○", cid) for cid in q.get("partial_chunk_ids", [])]
             if not marks:
@@ -110,7 +122,7 @@ def main() -> None:
 
     qa = load_jsonl(QA_PATH)
     chunks = {c["chunk_id"]: c for c in load_jsonl(CHUNKS_PATH)}
-    errors = validate(qa, set(chunks))
+    errors = validate(qa, {cid: c["text"] for cid, c in chunks.items()})
     for e in errors:
         print("NG", e)
     if errors:

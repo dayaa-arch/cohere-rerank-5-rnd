@@ -16,6 +16,7 @@ dependencies = [
     "httpx>=0.28",
     "beautifulsoup4>=4.12",
     "lxml>=5.3",
+    "matplotlib-fontja>=1.0",
 ]
 
 [dependency-groups]

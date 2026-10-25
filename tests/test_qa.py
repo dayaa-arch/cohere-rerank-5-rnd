@@ -55,3 +55,14 @@ def test_overlap_between_relevant_and_partial_is_reported():
 def test_wrong_type_count_is_reported():
     qa = make_qa()[1:]
     assert any("type fact" in e for e in validate(qa, CHUNK_IDS))
+
+
+def test_evidence_must_be_in_relevant_chunk_text():
+    qa = make_qa()
+    qa[0]["evidence"] = [{"chunk_id": "0001-01", "text": "答え"}]
+    texts = {cid: "本文に答えがある" for cid in CHUNK_IDS}
+    assert validate(qa, texts) == []
+    qa[0]["evidence"] = [{"chunk_id": "0001-01", "text": "ない文"}]
+    assert any("evidence" in e for e in validate(qa, texts))
+    qa[0]["evidence"] = [{"chunk_id": "0001-03", "text": "答え"}]
+    assert any("正解に入っていない" in e for e in validate(qa, texts))
