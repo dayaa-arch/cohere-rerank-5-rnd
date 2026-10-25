@@ -72,6 +72,7 @@ data/candidates.jsonl       1段目の上位20件（全条件で共通）
 src/rerank_ja_bench/        チャンク分割・検索・リランカーのアダプター・本実行・集計・比較表
 results/2026-10-25/         生の応答（raw/）、問題ごとの結果、summary.csv、比較表、グラフ
 docs/                       仕様書とフェーズごとの報告
+articles/                   Zenn の記事（GitHub 連携用。images/ は記事の画像）
 tests/                      指標の計算などのテスト
 ```
 
