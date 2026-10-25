@@ -566,6 +566,36 @@ def plot_x_threshold(summary: list[dict], path: Path) -> None:
     )
 
 
+def plot_x_cover(summary: list[dict], path: Path) -> None:
+    """X の記事のカバー画像（横5：縦2）。数字は実測値だけ。"""
+    by = {s["condition"]: s for s in summary}
+    ratio = by["B"]["cost_per_question_usd"] / by["C"]["cost_per_question_usd"]
+    stats = [
+        ("MRR（リランカーなし → 5 Pro）", f"{by['A']['mrr']:.2f} → {by['C']['mrr']:.2f}"),
+        ("1問あたり費用（4 Pro比）", f"約1/{ratio:.0f}"),
+        ("答えのない質問を公式しきい値で弾けた", f"{by['C']['no_answer_all_below'] * 8:.0f}/8問"),
+    ]
+    fig = plt.figure(figsize=(7.5, 3.0), facecolor=SURFACE)
+    fig.text(0.06, 0.84, "日本語RAG・国税庁タックスアンサー40問で実測", fontsize=10, color=SERIES)
+    fig.text(
+        0.06, 0.58, "Cohere Rerank 5 は乗り換える価値があるか", fontsize=19, color=TEXT, va="center"
+    )
+    fig.text(
+        0.06,
+        0.43,
+        "精度・Context Focus・較正スコアを、4 Pro と ruri-v3-reranker と比べた",
+        fontsize=9.5,
+        color=TEXT_SECONDARY,
+        va="center",
+    )
+    for i, (label, value) in enumerate(stats):
+        x = 0.06 + i * 0.31
+        fig.text(x, 0.21, value, fontsize=16, color=TEXT, va="center")
+        fig.text(x, 0.09, label, fontsize=8, color=TEXT_SECONDARY, va="center")
+    fig.savefig(path, dpi=200, facecolor=SURFACE)
+    plt.close(fig)
+
+
 def render_cases(per_q: list[dict], qa: dict[str, dict], top: int = 10) -> str:
     """最初の正解の順位が条件によって大きく変わった問題（主要5条件の比較）。"""
     focus = ["A", "B", "C", "D", "E"]
@@ -612,6 +642,7 @@ def main() -> None:
     plot_tradeoff(summary, run_dir / "fig_tradeoff.png")
     plot_x_card(summary, run_dir / "fig_x_card.png")
     plot_x_threshold(summary, run_dir / "fig_x_threshold.png")
+    plot_x_cover(summary, run_dir / "fig_x_cover.png")
     page_summary_path = run_dir / "page_cf" / "summary.csv"
     if page_summary_path.exists():
         plot_x_context_focus(read_csv(page_summary_path), run_dir / "fig_x_context_focus.png")
