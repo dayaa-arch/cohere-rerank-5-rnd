@@ -21,6 +21,7 @@ from datetime import UTC, date, datetime
 from pathlib import Path
 
 import httpx
+from dotenv import load_dotenv
 
 from rerank_ja_bench.qa import CHUNKS_PATH, QA_PATH, load_jsonl
 from rerank_ja_bench.rerankers.base import Reranker
@@ -109,6 +110,7 @@ def main() -> None:
     parser.add_argument("--out", default=f"results/{date.today().isoformat()}")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+    load_dotenv()  # .env に COHERE_API_KEY があれば読む（設定済みの環境変数は上書きしない）
 
     conditions = args.conditions.split(",")
     unknown = [c for c in conditions if c not in CONDITIONS]

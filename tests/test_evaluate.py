@@ -8,6 +8,7 @@ from rerank_ja_bench.evaluate import (
     cost_per_call,
     covered,
     merge_spans,
+    paired_differences,
     percentile,
     question_rows,
     summarize,
@@ -122,3 +123,16 @@ def test_question_rows_and_summary_on_hand_made_data():
     assert s["no_answer_all_below"] == 1.0
     assert s["answerable_any_above"] == 1.0
     assert s["latency_p50_ms"] == pytest.approx(125.0)
+
+
+def test_paired_differences_counts_wins_per_question():
+    rows = [
+        {"condition": "X", "qid": "q1", "in_top20": True, "mrr": 1.0},
+        {"condition": "X", "qid": "q2", "in_top20": True, "mrr": 0.5},
+        {"condition": "Y", "qid": "q1", "in_top20": True, "mrr": 0.5},
+        {"condition": "Y", "qid": "q2", "in_top20": True, "mrr": 0.5},
+    ]
+    (d,) = paired_differences(rows, pairs=[("X", "Y")], metrics=("mrr",))
+    assert d["diff"] == pytest.approx(0.25)
+    assert (d["a_better"], d["b_better"]) == (1, 0)
+    assert 0.0 <= d["ci_low"] <= d["diff"] <= d["ci_high"] <= 0.5

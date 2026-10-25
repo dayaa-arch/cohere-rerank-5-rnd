@@ -88,7 +88,9 @@ def ci(s: dict, m: str) -> str:
     return f"{fmt(s[m])}（{fmt(s[m + '_ci_low'], 2)}〜{fmt(s[m + '_ci_high'], 2)}）"
 
 
-def render_markdown(summary: list[dict], meta: dict, run_meta: dict) -> str:
+def render_markdown(
+    summary: list[dict], meta: dict, run_meta: dict, paired: list[dict] | None = None
+) -> str:
     by = {s["condition"]: s for s in summary}
     run = run_meta["runs"][-1] if run_meta.get("runs") else {}
     n_acc = int(summary[0]["n_accuracy"])
@@ -116,6 +118,43 @@ def render_markdown(summary: list[dict], meta: dict, run_meta: dict) -> str:
             f"| {LABELS.get(c, c)} | {MODELS.get(c, '')} | {fmt(s['hit@1'])} | {fmt(s['recall@5'])} "
             f"| {ci(s, 'mrr')} | {ci(s, 'ndcg@10')} |"
         )
+    if paired:
+        lines += [
+            "",
+            "## 条件の差（同じ問題どうしの差の平均と95％信頼区間）",
+            "",
+            ("信頼区間が0をまたぐ差は、この問題数では誤差と区別できない。"
+            "「良い／悪い」は、その指標で前者が上回った／下回った問題の数。"),
+            "",
+            "| 比較 | Hit@1 の差 | MRR の差 | nDCG@10 の差 | MRR で良い／悪い |",
+            "| --- | --- | --- | --- | --- |",
+        ]
+        by_pair: dict[tuple[str, str], dict[str, dict]] = {}
+        for d in paired:
+            by_pair.setdefault((d["a"], d["b"]), {})[d["metric"]] = d
+
+        def diff(d: dict) -> str:
+            return f"{d['diff']:+.3f}（{d['ci_low']:+.2f}〜{d['ci_high']:+.2f}）"
+
+        for (a, b), ms in by_pair.items():
+            mrr = ms["mrr"]
+            lines.append(
+                f"| {a} − {b} | {diff(ms['hit@1'])} | {diff(mrr)} | {diff(ms['ndcg@10'])} "
+                f"| {int(mrr['a_better'])}／{int(mrr['b_better'])} |"
+            )
+    stable = [
+        s for s in summary if s.get("rank_stable_rate") is not None and s["rank_stable_rate"] < 1
+    ]
+    if stable:
+        lines += [
+            "",
+            "3回の実行で順位がすべて同じだった問題の割合は、"
+            + "、".join(
+                f"{LABELS.get(s['condition'], s['condition'])} が {s['rank_stable_rate'] * 100:.1f}％"
+                for s in stable
+            )
+            + "で、ほかの条件はすべて100％だった。精度は1回目の順位で計算した。",
+        ]
     lines += [
         "",
         "## 速さと費用",
@@ -176,15 +215,34 @@ def render_markdown(summary: list[dict], meta: dict, run_meta: dict) -> str:
                 "適合率・再現率は、40問×候補20件の組のうち、正解チャンク（部分正解は含めない）を正しく拾えたかで数えた。"
             ),
             "",
-            "| 条件 | しきい値 | 適合率 | 再現率 | 答えなし8問で全候補が下回った割合 | 答えあり32問で1件以上が上回った割合 |",
-            "| --- | --- | --- | --- | --- | --- |",
+            "| 条件 | しきい値 | 適合率 | 適合率（部分正解も正解とみなす） | 再現率 | 答えなし8問で全候補が下回った割合 | 答えあり32問で1件以上が上回った割合 |",
+            "| --- | --- | --- | --- | --- | --- | --- |",
         ]
         for c in th:
             s = by[c]
             lines.append(
                 f"| {LABELS.get(c, c)} | {s['threshold']:.2f} | {fmt(s['threshold_precision'])} "
+                f"| {fmt(s.get('threshold_precision_with_partial'))} "
                 f"| {fmt(s['threshold_recall'])} | {fmt(s['no_answer_all_below'], pct=True)} "
                 f"| {fmt(s['answerable_any_above'], pct=True)} |"
+            )
+    sep = [s for s in summary if s.get("no_answer_top1_max") is not None]
+    if sep:
+        lines += [
+            "",
+            "### 1位のスコアで答えの有無を分けられるか",
+            "",
+            (f"答えなし8問の1位のスコアの最大値と、精度の対象 {n_acc} 問の1位のスコアの最小値。"
+            "最大値が最小値を下回れば、その間のどこかにしきい値を引けば分けられる（しきい値はこのデータで事後に決めることになる）。"),
+            "",
+            "| 条件 | 答えなしの最大 | 答えありの最小 | 答えありの中央値 | 間の幅 |",
+            "| --- | --- | --- | --- | --- |",
+        ]
+        for s in sep:
+            gap = s["answerable_top1_min"] - s["no_answer_top1_max"]
+            lines.append(
+                f"| {LABELS.get(s['condition'], s['condition'])} | {fmt(s['no_answer_top1_max'])} "
+                f"| {fmt(s['answerable_top1_min'])} | {fmt(s['answerable_top1_median'])} | {gap:+.3f} |"
             )
     lines += [
         "",
@@ -346,7 +404,9 @@ def main() -> None:
     run_meta = json.loads((run_dir / "run_meta.json").read_text())
     qa = {q["id"]: q for q in load_jsonl(QA_PATH)}
 
-    (run_dir / "summary.md").write_text(render_markdown(summary, meta, run_meta))
+    paired_path = run_dir / "paired_diff.csv"
+    paired = read_csv(paired_path) if paired_path.exists() else None
+    (run_dir / "summary.md").write_text(render_markdown(summary, meta, run_meta, paired))
     plot_accuracy(summary, run_dir / "fig_accuracy.png")
     plot_tradeoff(summary, run_dir / "fig_tradeoff.png")
     (run_dir / "cases.md").write_text(render_cases(per_q, qa))

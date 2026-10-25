@@ -5,6 +5,7 @@
 出力（--run のディレクトリ）：
 - per_question.csv：条件×問題ごとの指標
 - summary.csv：条件ごとの集計
+- paired_diff.csv：条件の差（同じ問題どうし）の平均と95％信頼区間
 - evaluation_meta.json：集計の前提（トークナイザー、しきい値、除外した問題など）
 
 前提：
@@ -180,7 +181,9 @@ def question_rows(
                 row["threshold"] = threshold
                 row["n_above"] = len(above)
                 row["tp_above"] = sum(1 for c in above if c in rel)
+                row["tp_partial_above"] = sum(1 for c in above if c in rel or c in par)
                 row["n_relevant_in_candidates"] = sum(1 for c in candidates if c in rel)
+            if first["ranked"][0]["score"] is not None:
                 row["top1_score"] = first["ranked"][0]["score"]
             rows.append(row)
     return rows
@@ -236,11 +239,64 @@ def summarize(rows: list[dict], conditions: list[str]) -> list[dict]:
             s["threshold"] = thr[0]["threshold"]
             s["threshold_precision"] = tp / n_above if n_above else None
             s["threshold_recall"] = tp / n_rel if n_rel else None
+            tpp = sum(r["tp_partial_above"] for r in thr)
+            s["threshold_precision_with_partial"] = tpp / n_above if n_above else None
             na = [r for r in thr if r["type"] == "no_answer"]
             s["no_answer_all_below"] = sum(r["n_above"] == 0 for r in na) / len(na)
             ans = [r for r in thr if r["type"] != "no_answer"]
             s["answerable_any_above"] = sum(r["n_above"] > 0 for r in ans) / len(ans)
+        top1 = [r for r in g if r.get("top1_score") is not None]
+        if top1:
+            # 1位のスコアだけで「答えあり／なし」を分けられるか（答えありは精度の対象の問題）
+            na = [r["top1_score"] for r in top1 if r["type"] == "no_answer"]
+            ans = [r["top1_score"] for r in top1 if r["in_top20"]]
+            s["no_answer_top1_max"] = max(na)
+            s["answerable_top1_min"] = min(ans)
+            s["answerable_top1_median"] = statistics.median(ans)
         out.append(s)
+    return out
+
+
+PAIRS = [
+    ("B", "A"),
+    ("C", "A"),
+    ("D", "A"),
+    ("E", "A"),
+    ("C", "B"),
+    ("D", "B"),
+    ("C", "D"),
+    ("C", "E"),
+]
+
+
+def paired_differences(rows: list[dict], pairs=PAIRS, metrics=("hit@1", "mrr", "ndcg@10")):
+    """条件の差（a − b）の平均と95％信頼区間。同じ問題どうしの差を復元抽出する。"""
+    rng = random.Random(BOOTSTRAP_SEED)
+    acc = defaultdict(dict)
+    for r in rows:
+        if r["in_top20"]:
+            acc[r["condition"]][r["qid"]] = r
+    out = []
+    for a, b in pairs:
+        if a not in acc or b not in acc:
+            continue
+        qids = sorted(set(acc[a]) & set(acc[b]))
+        for m in metrics:
+            d = [acc[a][q][m] - acc[b][q][m] for q in qids]
+            lo, hi = bootstrap_ci(d, rng)
+            out.append(
+                {
+                    "a": a,
+                    "b": b,
+                    "metric": m,
+                    "n": len(d),
+                    "diff": statistics.mean(d),
+                    "ci_low": lo,
+                    "ci_high": hi,
+                    "a_better": sum(x > 0 for x in d),
+                    "b_better": sum(x < 0 for x in d),
+                }
+            )
     return out
 
 
@@ -280,6 +336,7 @@ def main() -> None:
     summary = summarize(rows, conditions)
     write_csv(run_dir / "per_question.csv", rows)
     write_csv(run_dir / "summary.csv", summary)
+    write_csv(run_dir / "paired_diff.csv", paired_differences(rows))
     excluded = sorted({r["qid"] for r in rows if r["type"] != "no_answer" and not r["in_top20"]})
     meta = {
         "accuracy_excluded_not_in_top20": excluded,
